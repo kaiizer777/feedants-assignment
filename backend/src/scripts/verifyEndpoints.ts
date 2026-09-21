@@ -30,11 +30,12 @@ const recordTest = (
   actualStatus: number,
   expectedCode?: string,
   actualCode?: string,
-  details?: string
+  details?: string,
+  customCondition: boolean = true
 ) => {
   const statusMatch = actualStatus === expectedStatus;
   const codeMatch = !expectedCode || actualCode === expectedCode;
-  const passed = statusMatch && codeMatch;
+  const passed = statusMatch && codeMatch && customCondition;
 
   results.push({
     category,
@@ -135,7 +136,8 @@ const runEndpointVerification = async () => {
         res.status,
         undefined,
         undefined,
-        `spotsRemaining: ${body?.data?.spotsRemaining}, lifecycleState: ${body?.data?.lifecycleState}`
+        `spotsRemaining: ${body?.data?.spotsRemaining}, lifecycleState: ${body?.data?.lifecycleState}`,
+        isGuestNotReg
       );
       if (!isGuestNotReg) {
         console.error("   ❌ Anonymous userRegistration status should be 'not_registered'");
@@ -154,7 +156,11 @@ const runEndpointVerification = async () => {
         "GET /competitions/:id",
         "Registered user GET returns 200 with userRegistration.status 'submitted'",
         200,
-        res.status
+        res.status,
+        undefined,
+        undefined,
+        undefined,
+        isReg && isSubmitted
       );
       if (!isReg || !isSubmitted) {
         console.error("   ❌ Registered user registration state mismatch");
@@ -172,7 +178,11 @@ const runEndpointVerification = async () => {
         "GET /competitions/:id",
         "Unregistered user GET returns 200 with userRegistration.status 'not_registered'",
         200,
-        res.status
+        res.status,
+        undefined,
+        undefined,
+        undefined,
+        isNotReg
       );
       if (!isNotReg) {
         console.error("   ❌ Unregistered user registration state mismatch");
@@ -234,7 +244,7 @@ const runEndpointVerification = async () => {
       );
     }
 
-    // 2.4 Non-existent competition ID
+    // 2.4 Non-existent competition ID (valid ObjectId format)
     {
       const res = await fetch(`${baseUrl}/api/competitions/${fakeNonExistentId}/register`, {
         method: "POST",
@@ -243,7 +253,7 @@ const runEndpointVerification = async () => {
       const body = (await res.json()) as any;
       recordTest(
         "POST /register",
-        "Non-existent competition returns 404 NOT_FOUND",
+        "Valid ObjectId format but non-existent competition returns 404 NOT_FOUND",
         404,
         res.status,
         "NOT_FOUND",
@@ -288,7 +298,34 @@ const runEndpointVerification = async () => {
       );
     }
 
-    // 2.7 Immediate duplicate registration attempt by same newly registered user
+    // 2.7 Read-after-write consistency: Immediately GET competition as newly registered user
+    {
+      const res = await fetch(`${baseUrl}/api/competitions/${compId}`, {
+        headers: { "x-auth-token": unregisteredToken },
+      });
+      const body = (await res.json()) as any;
+      const userReg = body?.data?.userRegistration;
+      const isConsistent =
+        userReg?.isRegistered === true &&
+        userReg?.status === "registered" &&
+        userReg?.hasSubmitted === false;
+
+      recordTest(
+        "GET /competitions/:id (Read-After-Write)",
+        "Post-registration GET returns userRegistration.status 'registered' (not stale 'not_registered')",
+        200,
+        res.status,
+        undefined,
+        undefined,
+        `status: '${userReg?.status}', isRegistered: ${userReg?.isRegistered}`,
+        isConsistent
+      );
+      if (!isConsistent) {
+        console.error(`   ❌ Read-after-write consistency failed: expected status 'registered', got '${userReg?.status}'`);
+      }
+    }
+
+    // 2.8 Immediate duplicate registration attempt by same newly registered user
     {
       const res = await fetch(`${baseUrl}/api/competitions/${compId}/register`, {
         method: "POST",
@@ -305,7 +342,7 @@ const runEndpointVerification = async () => {
       );
     }
 
-    // 2.8 Spots full failure
+    // 2.9 Spots full failure
     {
       // Create a dedicated 3rd test user
       const fullTestUser = await User.create({
@@ -338,7 +375,7 @@ const runEndpointVerification = async () => {
       await User.deleteOne({ _id: fullTestUser._id });
     }
 
-    // 2.9 Registration deadline passed failure
+    // 2.10 Registration deadline passed failure
     {
       const deadlineTestUser = await User.create({
         name: "Deadline Test User",
@@ -487,7 +524,35 @@ const runEndpointVerification = async () => {
       }
     }
 
-    // 3.5 Submission window not yet open failure
+    // 3.5 Read-after-write consistency: Immediately GET competition as newly submitted user
+    {
+      const res = await fetch(`${baseUrl}/api/competitions/${compId}`, {
+        headers: { "x-auth-token": unregisteredToken },
+      });
+      const body = (await res.json()) as any;
+      const userReg = body?.data?.userRegistration;
+      const isConsistent =
+        userReg?.isRegistered === true &&
+        userReg?.status === "submitted" &&
+        userReg?.hasSubmitted === true &&
+        Boolean(userReg?.submission?.submittedAt);
+
+      recordTest(
+        "GET /competitions/:id (Read-After-Write)",
+        "Post-submission GET returns userRegistration.status 'submitted' with submission details",
+        200,
+        res.status,
+        undefined,
+        undefined,
+        `status: '${userReg?.status}', submittedAt: ${userReg?.submission?.submittedAt}`,
+        isConsistent
+      );
+      if (!isConsistent) {
+        console.error(`   ❌ Read-after-write consistency failed: expected status 'submitted', got '${userReg?.status}'`);
+      }
+    }
+
+    // 3.6 Submission window not yet open failure
     {
       // Temporarily set submissionStart in the future
       await Competition.updateOne(
@@ -514,7 +579,7 @@ const runEndpointVerification = async () => {
       );
     }
 
-    // 3.6 Submission window already closed failure
+    // 3.7 Submission window already closed failure
     {
       // Temporarily set submissionEnd in the past
       await Competition.updateOne(

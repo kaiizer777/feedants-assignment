@@ -12,56 +12,56 @@ data handling more heavily than UI polish, so front-load your effort accordingly
 *Goal: MongoDB schema fully designed and justified on paper before writing feature code.
 This is one of the most heavily evaluated parts — don't rush it.*
 
-- [ ] Define `Competition` schema (Mongoose model) — fields for: title, category/tags, prize pool, entry fee, total spots, spots taken (or derive from registrations — decide and document which), important dates (registerBy, submissionStart, submissionEnd, resultDate), rewards breakdown (array of {rank, amount}), judge info (name, title, bio, intro video ref), rules/eligibility content, about-competition content, previous winners (array)
-- [ ] Define `Registration` schema — fields for: competitionId (ref), userId (ref), registeredAt, paymentStatus (mocked — see scope.md), submission reference (nullable until submitted)
-- [ ] Define `User` schema — minimal fields sufficient to demonstrate per-user state (name, mock auth identifier)
-- [ ] Decide: is "spots remaining" a stored counter on `Competition`, or derived by counting `Registration` documents at query time? Document the trade-off (stored counter = faster reads but needs atomic updates and can drift; derived count = always accurate but slower at scale). **This decision directly affects your concurrency-safety approach in Phase 2 — make it deliberately.**
-- [ ] Add indexes: unique compound index on `(competitionId, userId)` in `Registration` to prevent duplicate registrations at the DB level, not just in application code
-- [ ] Write out (in README draft or comments) the lifecycle states a competition can be in — e.g. `upcoming`, `registration_open`, `registration_closed`, `submission_open`, `submission_closed`, `results_declared` — and whether this is a stored field or computed from dates. Document your choice.
-- [ ] Seed script: create a `seed.ts`/`seed.js` script that inserts one realistic competition (matching the design's data — Feedants Classical Dance, ₹1,500 prize pool, etc.) so the frontend has real data to render against from day one
-  - [ ] Make the seed script idempotent (clear existing seed data or upsert by a known slug/id first) so re-running it during development doesn't create duplicate competitions
+- [x] Define `Competition` schema (Mongoose model) — fields for: title, category/tags, prize pool, entry fee, total spots, spots taken (or derive from registrations — decide and document which), important dates (registerBy, submissionStart, submissionEnd, resultDate), rewards breakdown (array of {rank, amount}), judge info (name, title, bio, intro video ref), rules/eligibility content, about-competition content, previous winners (array)
+- [x] Define `Registration` schema — fields for: competitionId (ref), userId (ref), registeredAt, paymentStatus (mocked — see scope.md), submission reference (nullable until submitted)
+- [x] Define `User` schema — minimal fields sufficient to demonstrate per-user state (name, mock auth identifier)
+- [x] Decide: is "spots remaining" a stored counter on `Competition`, or derived by counting `Registration` documents at query time? Document the trade-off (stored counter = faster reads but needs atomic updates and can drift; derived count = always accurate but slower at scale). **This decision directly affects your concurrency-safety approach in Phase 2 — make it deliberately.**
+- [x] Add indexes: unique compound index on `(competitionId, userId)` in `Registration` to prevent duplicate registrations at the DB level, not just in application code
+- [x] Write out (in README draft or comments) the lifecycle states a competition can be in — e.g. `upcoming`, `registration_open`, `registration_closed`, `submission_open`, `submission_closed`, `results_declared` — and whether this is a stored field or computed from dates. Document your choice.
+- [x] Seed script: create a `seed.ts`/`seed.js` script that inserts one realistic competition (matching the design's data — Feedants Classical Dance, ₹1,500 prize pool, etc.) so the frontend has real data to render against from day one
+  - [x] Make the seed script idempotent (clear existing seed data or upsert by a known slug/id first) so re-running it during development doesn't create duplicate competitions
 
 ---
 
 ## Phase 2 — Backend API & Business Logic
 *Goal: every endpoint works correctly, validates properly, and is safe under concurrent load.*
 
-- [ ] `GET /api/competitions/:id` — returns full competition details
-  - [ ] Merges in the requesting (mock) user's registration status (registered / not / submitted)
-  - [ ] Computes and returns current lifecycle state (based on current date vs. stored dates)
-  - [ ] Computes and returns spots-remaining value
-  - [ ] Returns proper 404 if competition doesn't exist
-- [ ] `POST /api/competitions/:id/register`
-  - [ ] Validates: registration deadline has not passed
-  - [ ] Validates: spots are available
-  - [ ] Validates: user is not already registered (duplicate prevention)
-  - [ ] **Concurrency-safe implementation** — use an atomic MongoDB operation (e.g. `findOneAndUpdate` with a filter condition like `spotsTaken: { $lt: totalSpots }` combined with `$inc`, inside the same atomic call) rather than "read count → check in application code → write count." This is the single most important correctness requirement in the whole assignment.
-  - [ ] Returns appropriate error responses for each failure case (410/409/400 as appropriate, not just generic 500s)
-  - [ ] Mock payment step included (see scope.md assumption) before registration is finalized
-- [ ] `POST /api/competitions/:id/submission`
-  - [ ] Validates: user is registered for this competition
-  - [ ] Validates: current time is within the submission window
-  - [ ] Rejects if submission window hasn't started yet or has already closed
-  - [ ] Stores a submission reference on the `Registration` document
-- [ ] Centralized error-handling middleware (consistent error response shape across all endpoints)
-- [ ] Input validation middleware/layer (e.g. checking `:id` is a valid ObjectId before hitting the DB)
-- [ ] **Concurrency test**: write a small script (or use a tool like `autocannon`/simple Promise.all loop) that fires many simultaneous registration requests at the "last spot" scenario, and confirm only one succeeds. This is worth doing even informally — it's direct proof for your README that you actually solved the race condition rather than just writing code that looks correct.
+- [x] `GET /api/competitions/:id` — returns full competition details
+  - [x] Merges in the requesting (mock) user's registration status (registered / not / submitted)
+  - [x] Computes and returns current lifecycle state (based on current date vs. stored dates)
+  - [x] Computes and returns spots-remaining value
+  - [x] Returns proper 404 if competition doesn't exist
+- [x] `POST /api/competitions/:id/register`
+  - [x] Validates: registration deadline has not passed
+  - [x] Validates: spots are available
+  - [x] Validates: user is not already registered (duplicate prevention)
+  - [x] **Concurrency-safe implementation** — use an atomic MongoDB operation (e.g. `findOneAndUpdate` with a filter condition like `spotsTaken: { $lt: totalSpots }` combined with `$inc`, inside the same atomic call) rather than "read count → check in application code → write count." This is the single most important correctness requirement in the whole assignment.
+  - [x] Returns appropriate error responses for each failure case (410/409/400 as appropriate, not just generic 500s)
+  - [x] Mock payment step included (see scope.md assumption) before registration is finalized
+- [x] `POST /api/competitions/:id/submission`
+  - [x] Validates: user is registered for this competition
+  - [x] Validates: current time is within the submission window
+  - [x] Rejects if submission window hasn't started yet or has already closed
+  - [x] Stores a submission reference on the `Registration` document
+- [x] Centralized error-handling middleware (consistent error response shape across all endpoints)
+- [x] Input validation middleware/layer (e.g. checking `:id` is a valid ObjectId before hitting the DB)
+- [x] **Concurrency test**: write a small script (or use a tool like `autocannon`/simple Promise.all loop) that fires many simultaneous registration requests at the "last spot" scenario, and confirm only one succeeds. This is worth doing even informally — it's direct proof for your README that you actually solved the race condition rather than just writing code that looks correct.
 
 ---
 
 ## Phase 3 — API Verification (before touching the frontend)
 *Goal: prove the backend is fully correct in isolation, so frontend bugs don't get confused with backend bugs.*
 
-- [ ] Manually test all endpoints via Postman/Thunder Client/curl:
-  - [ ] Fetch competition details — correct shape, correct computed fields
-  - [ ] Register successfully
-  - [ ] Register again as same user — should fail with clear error
-  - [ ] Register after deadline (temporarily adjust seed data dates to test) — should fail
-  - [ ] Register when spots = 0 — should fail
-  - [ ] Submit without being registered — should fail
-  - [ ] Submit outside submission window — should fail
-  - [ ] Submit successfully within window
-- [ ] Run the concurrency test from Phase 2 and confirm correct behavior — record the result (even a terminal screenshot) for your own reference when writing the README
+- [x] Manually test all endpoints via Postman/Thunder Client/curl:
+  - [x] Fetch competition details — correct shape, correct computed fields
+  - [x] Register successfully
+  - [x] Register again as same user — should fail with clear error
+  - [x] Register after deadline (temporarily adjust seed data dates to test) — should fail
+  - [x] Register when spots = 0 — should fail
+  - [x] Submit without being registered — should fail
+  - [x] Submit outside submission window — should fail
+  - [x] Submit successfully within window
+- [x] Run the concurrency test from Phase 2 and confirm correct behavior — record the result (even a terminal screenshot) for your own reference when writing the README
 
 ---
 
