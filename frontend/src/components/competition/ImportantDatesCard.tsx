@@ -25,12 +25,9 @@ export const ImportantDatesCard: React.FC<ImportantDatesCardProps> = ({
         <View style={styles.gridRow}>
           {/* Top Left: Register Before */}
           <View style={[styles.gridCell, styles.cellRightBorder]}>
-            <Ionicons
-              name="calendar-outline"
-              size={22}
-              color="#00897B"
-              style={styles.cellIcon}
-            />
+            <View style={styles.iconSquircle}>
+              <Ionicons name="calendar" size={17} color="#007A78" />
+            </View>
             <View style={styles.cellContent}>
               <Text style={styles.dateLabel}>Register Before</Text>
               <Text style={styles.dateValue}>{formatDateDisplay(registerBy)}</Text>
@@ -40,12 +37,9 @@ export const ImportantDatesCard: React.FC<ImportantDatesCardProps> = ({
 
           {/* Top Right: Submission Starts */}
           <View style={styles.gridCell}>
-            <Ionicons
-              name="paper-plane-outline"
-              size={22}
-              color="#00897B"
-              style={styles.cellIcon}
-            />
+            <View style={styles.iconSquircle}>
+              <Ionicons name="paper-plane" size={16} color="#007A78" />
+            </View>
             <View style={styles.cellContent}>
               <Text style={styles.dateLabel}>Submission Starts</Text>
               <Text style={styles.dateValue}>
@@ -65,12 +59,9 @@ export const ImportantDatesCard: React.FC<ImportantDatesCardProps> = ({
         <View style={styles.gridRow}>
           {/* Bottom Left: Submission Ends */}
           <View style={[styles.gridCell, styles.cellRightBorder]}>
-            <Feather
-              name="upload"
-              size={20}
-              color="#00897B"
-              style={styles.cellIcon}
-            />
+            <View style={styles.iconSquircle}>
+              <Feather name="upload-cloud" size={17} color="#007A78" />
+            </View>
             <View style={styles.cellContent}>
               <Text style={styles.dateLabel}>Submission Ends</Text>
               <Text style={styles.dateValue}>
@@ -84,15 +75,12 @@ export const ImportantDatesCard: React.FC<ImportantDatesCardProps> = ({
 
           {/* Bottom Right: Result Date */}
           <View style={styles.gridCell}>
-            <Ionicons
-              name="trophy-outline"
-              size={22}
-              color="#00897B"
-              style={styles.cellIcon}
-            />
+            <View style={[styles.iconSquircle, styles.trophySquircle]}>
+              <Ionicons name="trophy" size={16} color="#D97706" />
+            </View>
             <View style={styles.cellContent}>
               <Text style={styles.dateLabel}>Result Date</Text>
-              <Text style={styles.dateValue}>
+              <Text style={[styles.dateValue, styles.resultDateValue]}>
                 {formatDateDisplay(resultDate)}
               </Text>
               <Text style={styles.timeValue}>
@@ -112,11 +100,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 14,
     borderWidth: 1,
-    borderColor: "#EEF2F6",
-    borderTopColor: "#FFFFFF",
-    shadowColor: "#0D2B2A",
+    borderColor: "#E2E8F0",
+    borderTopColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -142,7 +130,7 @@ const styles = StyleSheet.create({
   gridCell: {
     flex: 1,
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     paddingVertical: 10,
     paddingHorizontal: 6,
     gap: 10,
@@ -151,28 +139,44 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     borderRightColor: "#F1F5F9",
   },
-  cellIcon: {
-    marginTop: 2,
+  iconSquircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: "#E6F7F5",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#CCFBF1",
+  },
+  trophySquircle: {
+    backgroundColor: "#FEF3C7",
+    borderColor: "#FDE68A",
   },
   cellContent: {
     flex: 1,
   },
   dateLabel: {
-    fontSize: 11.5,
+    fontSize: 11,
     color: "#64748B",
-    fontWeight: "500",
+    fontWeight: "600",
     marginBottom: 2,
+    letterSpacing: 0.1,
   },
   dateValue: {
-    fontSize: 15,
+    fontSize: 14.5,
     fontWeight: "800",
     color: "#007A78",
     marginBottom: 1,
     letterSpacing: -0.2,
   },
+  resultDateValue: {
+    color: "#B45309",
+  },
   timeValue: {
-    fontSize: 12.5,
+    fontSize: 12,
     color: "#0F172A",
     fontWeight: "700",
+    fontVariant: ["tabular-nums"],
   },
 });

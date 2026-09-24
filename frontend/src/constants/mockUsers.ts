@@ -20,4 +20,4 @@ export const MOCK_USERS: MockUser[] = [
 ];
 
 export const DEFAULT_COMPETITION_ID =
-  process.env.EXPO_PUBLIC_DEFAULT_COMPETITION_ID || "6ab43aaaabd4bffa981a53c9";
+  process.env.EXPO_PUBLIC_DEFAULT_COMPETITION_ID || "";

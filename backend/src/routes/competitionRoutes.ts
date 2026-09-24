@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getCompetitionDetails,
+  getLatestCompetition,
   registerForCompetition,
   submitEntry,
 } from "../controllers/competitionController";
@@ -8,6 +9,14 @@ import { validateObjectId } from "../middleware/validateObjectId";
 import { optionalAuth, requireAuth } from "../middleware/auth";
 
 const router = Router();
+
+// 0. GET /api/competitions/latest - Most recently created competition + user state
+// CRITICAL: Registered BEFORE /competitions/:id to prevent "latest" from being evaluated as an invalid ObjectId
+router.get(
+  "/competitions/latest",
+  optionalAuth,
+  getLatestCompetition
+);
 
 // 1. GET /api/competitions/:id - Complete competition details + user state
 router.get(

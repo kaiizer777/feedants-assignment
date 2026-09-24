@@ -92,6 +92,86 @@ const runEndpointVerification = async () => {
     const fakeNonExistentId = new mongoose.Types.ObjectId().toString();
 
     // ====================================================================
+    // GROUP 0: GET /api/competitions/latest
+    // ====================================================================
+    console.log("\n📋 [GROUP 0] GET /api/competitions/latest");
+
+    // 0.1 Anonymous request returns latest seeded competition with default user state
+    {
+      const res = await fetch(`${baseUrl}/api/competitions/latest`);
+      const body = (await res.json()) as any;
+      const idMatches = body?.data?._id === compId;
+      const titleMatches = body?.data?.title === competition.title;
+      const isGuestNotReg = body?.data?.userRegistration?.status === "not_registered";
+      const hasComputedFields =
+        typeof body?.data?.spotsRemaining === "number" &&
+        typeof body?.data?.lifecycleState === "string";
+
+      recordTest(
+        "GET /competitions/latest",
+        "GET /latest returns seeded competition without route collision with :id validator",
+        200,
+        res.status,
+        undefined,
+        undefined,
+        `id: ${body?.data?._id}, title: ${body?.data?.title}`,
+        idMatches && titleMatches && isGuestNotReg && hasComputedFields
+      );
+    }
+
+    // 0.2 Authenticated request returns user-specific registration state
+    {
+      const res = await fetch(`${baseUrl}/api/competitions/latest`, {
+        headers: { "x-auth-token": registeredToken },
+      });
+      const body = (await res.json()) as any;
+      const isReg = body?.data?.userRegistration?.isRegistered === true;
+      const isSubmitted = body?.data?.userRegistration?.status === "submitted";
+
+      recordTest(
+        "GET /competitions/latest",
+        "GET /latest with auth header returns userRegistration state for requesting user",
+        200,
+        res.status,
+        undefined,
+        undefined,
+        `isRegistered: ${isReg}, status: ${body?.data?.userRegistration?.status}`,
+        isReg && isSubmitted
+      );
+    }
+
+    // 0.3 Zero competitions in DB returns 404 with helpful setup instruction
+    {
+      // Isolated test setup: temporarily stash existing competitions
+      const existingCompetitions = await Competition.find().lean();
+      try {
+        await Competition.deleteMany({});
+        const res = await fetch(`${baseUrl}/api/competitions/latest`);
+        const body = (await res.json()) as any;
+        const isNotFound = res.status === 404 && body?.error?.code === "NOT_FOUND";
+        const hasHelpfulMessage =
+          typeof body?.error?.message === "string" &&
+          body.error.message.includes("seed");
+
+        recordTest(
+          "GET /competitions/latest",
+          "Zero competitions in DB returns 404 NOT_FOUND with helpful seed prompt",
+          404,
+          res.status,
+          "NOT_FOUND",
+          body?.error?.code,
+          body?.error?.message,
+          isNotFound && hasHelpfulMessage
+        );
+      } finally {
+        // Isolated test teardown: restore competition data
+        if (existingCompetitions.length > 0) {
+          await Competition.insertMany(existingCompetitions);
+        }
+      }
+    }
+
+    // ====================================================================
     // GROUP 1: GET /api/competitions/:id
     // ====================================================================
     console.log("\n📋 [GROUP 1] GET /api/competitions/:id");

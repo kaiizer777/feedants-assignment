@@ -21,11 +21,13 @@ export const Header: React.FC<HeaderProps> = ({
         activeOpacity={0.7}
         hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       >
-        <Ionicons name="arrow-back" size={20} color="#0F172A" />
+        <View style={styles.backIconCircle}>
+          <Ionicons name="arrow-back" size={18} color="#0F172A" />
+        </View>
         <Text style={styles.backText}>Go back</Text>
       </TouchableOpacity>
 
-      {/* Language Toggle matching Objective_Page.png */}
+      {/* Language Toggle with tactile segmented control */}
       <View style={styles.langToggleContainer}>
         <TouchableOpacity
           style={[
@@ -33,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
             selectedLanguage === "ENG" && styles.langPillActive,
           ]}
           onPress={() => onToggleLanguage("ENG")}
-          activeOpacity={0.8}
+          activeOpacity={0.85}
         >
           <Text
             style={[
@@ -51,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
             selectedLanguage === "HINDI" && styles.langPillActive,
           ]}
           onPress={() => onToggleLanguage("HINDI")}
-          activeOpacity={0.8}
+          activeOpacity={0.85}
         >
           <Text
             style={[
@@ -73,11 +75,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingVertical: 10,
     backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
+    borderBottomColor: "#E2E8F0",
   },
   backButton: {
     flexDirection: "row",
@@ -86,8 +87,18 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 2,
   },
+  backIconCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#F8FAFC",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
   backText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "700",
     color: "#0F172A",
     letterSpacing: -0.2,
@@ -96,7 +107,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#F1F5F9",
-    borderRadius: 20,
+    borderRadius: 22,
     padding: 3,
     borderWidth: 1,
     borderColor: "#E2E8F0",
@@ -104,19 +115,19 @@ const styles = StyleSheet.create({
   langPill: {
     paddingHorizontal: 14,
     paddingVertical: 5,
-    borderRadius: 16,
+    borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
   },
   langPillActive: {
     backgroundColor: "#005C54",
     borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.28)",
-    borderBottomWidth: 1,
-    borderBottomColor: "#003E38",
-    shadowColor: "#003E38",
+    borderTopColor: "rgba(255, 255, 255, 0.35)",
+    borderBottomWidth: 1.5,
+    borderBottomColor: "#002B27",
+    shadowColor: "#002B27",
     shadowOffset: { width: 0, height: 1.5 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.22,
     shadowRadius: 2.5,
     elevation: 2,
   },

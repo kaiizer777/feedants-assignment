@@ -17,14 +17,14 @@ export const TrustInfoSection: React.FC<TrustInfoSectionProps> = ({
       <TouchableOpacity
         style={styles.leftCard}
         onPress={onHowItWorksPress}
-        activeOpacity={0.8}
+        activeOpacity={0.82}
       >
         <View style={styles.playIconBox}>
-          <Ionicons name="play" size={16} color="#007A78" style={{ marginLeft: 2 }} />
+          <Ionicons name="play" size={15} color="#007A78" style={{ marginLeft: 2 }} />
         </View>
         <View style={styles.leftTextContent}>
           <Text style={styles.leftTitle}>How will you receive prize money?</Text>
-          <Text style={styles.leftSubtitle}>Watch video to know more</Text>
+          <Text style={styles.leftSubtitle}>Watch video • Direct UPI transfer</Text>
         </View>
       </TouchableOpacity>
 
@@ -35,14 +35,18 @@ export const TrustInfoSection: React.FC<TrustInfoSectionProps> = ({
           onPress={onRefundPolicyPress}
           activeOpacity={0.7}
         >
-          <Ionicons name="shield-checkmark-outline" size={16} color="#00897B" />
-          <Text style={styles.policyText}>Refund policy</Text>
+          <View style={styles.shieldCircle}>
+            <Ionicons name="shield-checkmark" size={12} color="#007A78" />
+          </View>
+          <Text style={styles.policyText}>100% Refund policy</Text>
         </TouchableOpacity>
 
         <View style={styles.razorpayRow}>
-          <Ionicons name="shield-checkmark-outline" size={16} color="#00897B" />
+          <View style={[styles.shieldCircle, styles.lockCircle]}>
+            <Ionicons name="lock-closed" size={11} color="#007A78" />
+          </View>
           <View style={styles.razorpayContent}>
-            <Text style={styles.razorpayLabel}>Secure payments powered by</Text>
+            <Text style={styles.razorpayLabel}>Secure payments by</Text>
             <View style={styles.razorpayLogo}>
               <Ionicons name="flash" size={12} color="#0C2340" />
               <Text style={styles.razorpayText}>Razorpay</Text>
@@ -67,9 +71,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 13,
     borderWidth: 1,
-    borderColor: "#EEF2F6",
-    borderTopColor: "#FFFFFF",
-    shadowColor: "#0D2B2A",
+    borderColor: "#E2E8F0",
+    borderTopColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 6,
@@ -77,18 +81,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   playIconBox: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: "#E6F7F5",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 10,
+    marginBottom: 8,
     borderWidth: 1,
     borderColor: "#99F6E4",
+    borderTopColor: "rgba(255, 255, 255, 0.95)",
+    borderBottomWidth: 1.5,
+    borderBottomColor: "#5EEAD4",
     shadowColor: "#007A78",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.12,
     shadowRadius: 2,
     elevation: 1,
   },
@@ -105,7 +112,7 @@ const styles = StyleSheet.create({
   leftSubtitle: {
     fontSize: 10.5,
     color: "#64748B",
-    fontWeight: "500",
+    fontWeight: "600",
   },
   rightCard: {
     flex: 1.1,
@@ -113,9 +120,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 13,
     borderWidth: 1,
-    borderColor: "#EEF2F6",
-    borderTopColor: "#FFFFFF",
-    shadowColor: "#0D2B2A",
+    borderColor: "#E2E8F0",
+    borderTopColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 6,
@@ -126,10 +133,24 @@ const styles = StyleSheet.create({
   policyRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 7,
+    gap: 8,
     paddingBottom: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#F1F5F9",
+  },
+  shieldCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#E6F7F5",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#CCFBF1",
+  },
+  lockCircle: {
+    backgroundColor: "#F1F5F9",
+    borderColor: "#E2E8F0",
   },
   policyText: {
     fontSize: 12.5,
@@ -139,17 +160,16 @@ const styles = StyleSheet.create({
   razorpayRow: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 7,
+    gap: 8,
   },
   razorpayContent: {
     flex: 1,
-    gap: 3,
+    gap: 2,
   },
   razorpayLabel: {
-    fontSize: 10.5,
+    fontSize: 10,
     color: "#64748B",
-    lineHeight: 14,
-    fontWeight: "500",
+    fontWeight: "600",
   },
   razorpayLogo: {
     flexDirection: "row",
@@ -157,7 +177,7 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   razorpayText: {
-    fontSize: 14,
+    fontSize: 13.5,
     fontWeight: "900",
     fontStyle: "italic",
     color: "#0C2340",

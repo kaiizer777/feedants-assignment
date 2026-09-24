@@ -18,6 +18,22 @@ export const getCompetitionDetails = async (
   return response.data.data;
 };
 
+export const getLatestCompetition = async (
+  authToken?: string
+): Promise<Competition> => {
+  const headers: Record<string, string> = {};
+  if (authToken) {
+    headers["x-auth-token"] = authToken;
+  }
+
+  const response = await apiClient.get<ApiResponse<Competition>>(
+    "/competitions/latest",
+    { headers }
+  );
+
+  return response.data.data;
+};
+
 export const registerForCompetition = async (
   id: string,
   authToken: string

@@ -302,3 +302,71 @@ export const submitEntry = asyncHandler(
     });
   }
 );
+
+/**
+ * 4. GET /api/competitions/latest
+ *
+ * Fetches the single most recently created Competition document merged with the requesting
+ * user's registration and submission state. Returns the exact same response shape as
+ * GET /api/competitions/:id.
+ */
+export const getLatestCompetition = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    // Sort by _id descending to return the single most recently created Competition document
+    const competition = await Competition.findOne().sort({ createdAt: -1, _id: -1 });
+    if (!competition) {
+      throw new AppError(
+        404,
+        "NOT_FOUND",
+        "No competitions found — run npm run seed first"
+      );
+    }
+
+    // Determine current user's registration status
+    let userRegistration = {
+      isRegistered: false,
+      status: "not_registered" as "not_registered" | "registered" | "submitted",
+      registeredAt: null as Date | null,
+      hasSubmitted: false,
+      submission: null as unknown,
+    };
+
+    if (req.user) {
+      const registration = await Registration.findOne({
+        competitionId: competition._id,
+        userId: req.user._id,
+      });
+
+      if (registration) {
+        const hasSubmitted = Boolean(
+          registration.submission?.submittedAt ||
+            registration.submission?.content ||
+            registration.submission?.mediaUrl
+        );
+
+        userRegistration = {
+          isRegistered: true,
+          status: hasSubmitted ? "submitted" : "registered",
+          registeredAt: registration.registeredAt,
+          hasSubmitted,
+          submission: registration.submission || null,
+        };
+      }
+    }
+
+    const competitionJson = competition.toJSON();
+
+    res.status(200).json({
+      success: true,
+      data: {
+        ...competitionJson,
+        spotsRemaining: competition.spotsRemaining,
+        lifecycleState: competition.lifecycleState,
+        isRegistrationOpen: competition.isRegistrationOpen,
+        isSubmissionOpen: competition.isSubmissionOpen,
+        userRegistration,
+      },
+    });
+  }
+);
+

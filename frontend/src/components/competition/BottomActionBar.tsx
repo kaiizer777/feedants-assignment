@@ -43,7 +43,7 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({
   const subWindowClosed = !isSubmissionOpen && now >= new Date(submissionEnd);
   const subWindowUpcoming = !isSubmissionOpen && now < new Date(submissionStart);
 
-  // Derive button configuration based on exact state matrix matching Objective_Page.png
+  // Derive button configuration based on exact state matrix
   let label = "Register Now";
   let subLabel = `Only ${spotsRemaining} spots left • ₹${competition.entryFee}`;
   let isEnabled = true;
@@ -57,25 +57,26 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({
       subLabel = "All 20 spots have been booked";
       isEnabled = false;
       buttonStyle = styles.buttonDisabled;
-      statusIcon = "close-circle-outline";
+      statusIcon = "close-circle";
     } else if (regDeadlinePassed) {
       label = "Registration Closed";
       subLabel = `Deadline passed on ${formatDateDisplay(registerBy)}`;
       isEnabled = false;
       buttonStyle = styles.buttonDisabled;
-      statusIcon = "time-outline";
+      statusIcon = "time";
     } else {
       label = "Register Now";
       subLabel = `Only ${spotsRemaining} spots left • ₹${competition.entryFee}`;
       isEnabled = true;
       onPress = onRegisterPress;
       buttonStyle = styles.buttonPrimary;
+      statusIcon = "flash";
     }
   } else {
     // User is registered
     if (hasSubmitted) {
-      label = "Submitted";
-      subLabel = "Entry received & under evaluation";
+      label = "Entry Submitted";
+      subLabel = "Performance received • Evaluation in progress";
       isEnabled = false;
       buttonStyle = styles.buttonSubmitted;
       statusIcon = "checkmark-circle";
@@ -84,20 +85,21 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({
       subLabel = `Closed on ${formatDateDisplay(submissionEnd)}`;
       isEnabled = false;
       buttonStyle = styles.buttonDisabled;
-      statusIcon = "alert-circle-outline";
+      statusIcon = "alert-circle";
     } else if (subWindowUpcoming) {
-      label = `Submissions open on ${formatDateDisplay(submissionStart)}`;
-      subLabel = "Registered • Get your performance ready";
+      label = `Submissions open ${formatDateDisplay(submissionStart)}`;
+      subLabel = "Registered • Get your routine ready";
       isEnabled = false;
       buttonStyle = styles.buttonDisabled;
-      statusIcon = "calendar-outline";
+      statusIcon = "calendar";
     } else {
       // Registered + submission open + not yet submitted
       label = "Upload Submission";
-      subLabel = "Registered";
+      subLabel = "Submission window is live • Tap to submit";
       isEnabled = true;
       onPress = onSubmitPress;
       buttonStyle = styles.buttonPrimary;
+      statusIcon = "cloud-upload";
     }
   }
 
@@ -121,7 +123,7 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({
                 <Ionicons
                   name={statusIcon}
                   size={16}
-                  color={buttonStyle === styles.buttonSubmitted ? "#00897B" : "#FFFFFF"}
+                  color={buttonStyle === styles.buttonSubmitted ? "#007A78" : "#FFFFFF"}
                 />
               )}
               <Text
@@ -161,9 +163,9 @@ const styles = StyleSheet.create({
     borderTopColor: "#E2E8F0",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 6,
   },
   button: {
     borderRadius: 12,
@@ -171,19 +173,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderTopWidth: 1.5,
-    borderBottomWidth: 2.5,
+    borderBottomWidth: 3,
     borderLeftWidth: 1,
     borderRightWidth: 1,
   },
   buttonPrimary: {
     backgroundColor: "#005C54",
-    borderTopColor: "rgba(255, 255, 255, 0.32)",
+    borderTopColor: "rgba(255, 255, 255, 0.38)",
     borderLeftColor: "#004842",
     borderRightColor: "#004842",
     borderBottomColor: "#002B27",
     shadowColor: "#002B27",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.28,
+    shadowOffset: { width: 0, height: 3.5 },
+    shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 4,
   },
@@ -208,7 +210,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#334155",
   },
   buttonInactiveOpacity: {
-    opacity: 0.9,
+    opacity: 0.95,
   },
   contentColumn: {
     alignItems: "center",
@@ -226,9 +228,10 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
   },
   subText: {
-    color: "rgba(255, 255, 255, 0.9)",
+    color: "rgba(255, 255, 255, 0.92)",
     fontSize: 11.5,
     fontWeight: "600",
+    letterSpacing: 0.1,
   },
   submittedText: {
     color: "#007A78",

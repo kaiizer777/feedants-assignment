@@ -20,16 +20,23 @@ export const JudgeCard: React.FC<JudgeCardProps> = ({ judge, onPlayPress }) => {
   return (
     <View style={styles.card}>
       <View style={styles.left}>
-        <Image
-          source={avatarSource}
-          style={styles.avatar}
-          contentFit="cover"
-          priority="high"
-          cachePolicy="memory-disk"
-        />
+        <View style={styles.avatarWrapper}>
+          <Image
+            source={avatarSource}
+            style={styles.avatar}
+            contentFit="cover"
+            priority="high"
+            cachePolicy="memory-disk"
+          />
+          <View style={styles.verifiedDot}>
+            <Ionicons name="checkmark" size={10} color="#FFFFFF" />
+          </View>
+        </View>
 
         <View style={styles.info}>
-          <Text style={styles.judgeLabel}>Judge</Text>
+          <View style={styles.judgeBadgeRow}>
+            <Text style={styles.judgeLabel}>Official Judge</Text>
+          </View>
           <Text style={styles.judgeName}>{judge?.name || "Manju Dubey"}</Text>
           <Text style={styles.judgeTitle}>
             {judge?.title || "Professional Kathak Dancer"}
@@ -43,12 +50,12 @@ export const JudgeCard: React.FC<JudgeCardProps> = ({ judge, onPlayPress }) => {
       <TouchableOpacity
         style={styles.videoButtonContainer}
         onPress={onPlayPress}
-        activeOpacity={0.7}
+        activeOpacity={0.8}
       >
         <View style={styles.playCircle}>
-          <Ionicons name="play" size={18} color="#007A78" style={{ marginLeft: 2 }} />
+          <Ionicons name="play" size={16} color="#007A78" style={{ marginLeft: 2 }} />
         </View>
-        <Text style={styles.videoLabel}>Intro Video</Text>
+        <Text style={styles.videoLabel}>Watch Intro</Text>
       </TouchableOpacity>
     </View>
   );
@@ -65,9 +72,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderWidth: 1,
-    borderColor: "#EEF2F6",
-    borderTopColor: "#FFFFFF",
-    shadowColor: "#0D2B2A",
+    borderColor: "#E2E8F0",
+    borderTopColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -76,39 +83,57 @@ const styles = StyleSheet.create({
   left: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 13,
+    gap: 12,
     flex: 1,
   },
+  avatarWrapper: {
+    position: "relative",
+  },
   avatar: {
-    width: 62,
-    height: 62,
-    borderRadius: 31,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: "#E2E8F0",
     borderWidth: 2,
+    borderColor: "#F1F5F9",
+  },
+  verifiedDot: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: "#007A78",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1.5,
     borderColor: "#FFFFFF",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
   },
   info: {
     flex: 1,
   },
+  judgeBadgeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 1,
+  },
   judgeLabel: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#94A3B8",
+    fontSize: 10.5,
+    fontWeight: "700",
+    color: "#007A78",
     letterSpacing: 0.3,
+    textTransform: "uppercase",
   },
   judgeName: {
-    fontSize: 17,
+    fontSize: 16.5,
     fontWeight: "800",
     color: "#0F172A",
     letterSpacing: -0.3,
-    marginTop: 1,
   },
   judgeTitle: {
-    fontSize: 12.5,
+    fontSize: 12,
     fontWeight: "600",
     color: "#475569",
     marginTop: 1.5,
@@ -122,7 +147,7 @@ const styles = StyleSheet.create({
   videoButtonContainer: {
     alignItems: "center",
     gap: 4,
-    paddingLeft: 6,
+    paddingLeft: 8,
   },
   playCircle: {
     width: 44,
@@ -133,12 +158,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderWidth: 1,
     borderColor: "#99F6E4",
-    borderTopColor: "rgba(255, 255, 255, 0.8)",
+    borderTopColor: "rgba(255, 255, 255, 0.95)",
+    borderBottomWidth: 1.5,
+    borderBottomColor: "#5EEAD4",
     shadowColor: "#007A78",
     shadowOffset: { width: 0, height: 1.5 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.14,
     shadowRadius: 3,
-    elevation: 1,
+    elevation: 2,
   },
   videoLabel: {
     fontSize: 11,

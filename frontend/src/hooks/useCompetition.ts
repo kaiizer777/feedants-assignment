@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { Competition, MockUser } from "../types/competition";
 import {
   getCompetitionDetails,
+  getLatestCompetition,
   registerForCompetition,
   submitCompetitionEntry,
 } from "../api/competition";
-import { MOCK_USERS, DEFAULT_COMPETITION_ID } from "../constants/mockUsers";
+import { MOCK_USERS } from "../constants/mockUsers";
 
 interface UseCompetitionReturn {
   competition: Competition | null;
@@ -24,7 +25,7 @@ interface UseCompetitionReturn {
 }
 
 export const useCompetition = (
-  competitionId: string = DEFAULT_COMPETITION_ID
+  competitionId?: string
 ): UseCompetitionReturn => {
   const [competition, setCompetition] = useState<Competition | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -33,21 +34,29 @@ export const useCompetition = (
   const [activeUser, setActiveUser] = useState<MockUser>(MOCK_USERS[0]);
   const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
 
-  const fetchDetails = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      setErrorCode(null);
-      const data = await getCompetitionDetails(competitionId, activeUser.token);
-      setCompetition(data);
-    } catch (err: any) {
-      console.error("Failed to load competition details:", err);
-      setError(err.message || "Failed to load competition");
-      setErrorCode(err.code || "LOAD_ERROR");
-    } finally {
-      setLoading(false);
-    }
-  }, [competitionId, activeUser.token]);
+  const fetchDetails = useCallback(
+    async (targetId?: string) => {
+      try {
+        setLoading(true);
+        setError(null);
+        setErrorCode(null);
+        const resolvedId =
+          targetId ||
+          (competitionId && competitionId.trim() ? competitionId.trim() : undefined);
+        const data = resolvedId
+          ? await getCompetitionDetails(resolvedId, activeUser.token)
+          : await getLatestCompetition(activeUser.token);
+        setCompetition(data);
+      } catch (err: any) {
+        console.error("Failed to load competition details:", err);
+        setError(err.message || "Failed to load competition");
+        setErrorCode(err.code || "LOAD_ERROR");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [competitionId, activeUser.token]
+  );
 
   useEffect(() => {
     fetchDetails();
@@ -66,7 +75,7 @@ export const useCompetition = (
       setIsActionLoading(true);
       const res = await registerForCompetition(competition._id, activeUser.token);
       // Immediately refetch to refresh composite state cleanly
-      await fetchDetails();
+      await fetchDetails(competition._id);
       return {
         success: true,
         message: res.message || "Successfully registered for competition!",
@@ -75,7 +84,7 @@ export const useCompetition = (
       console.error("Registration error:", err);
       const msg = err.message || "Registration failed";
       // Even on error, refetch state in case spots changed concurrently
-      fetchDetails().catch(() => {});
+      fetchDetails(competition._id).catch(() => {});
       return {
         success: false,
         error: msg,
@@ -105,7 +114,7 @@ export const useCompetition = (
         payload
       );
       // Immediately refetch to sync submitted status
-      await fetchDetails();
+      await fetchDetails(competition._id);
       return {
         success: true,
         message: res.message || "Submission successfully uploaded!",
@@ -129,9 +138,10 @@ export const useCompetition = (
     errorCode,
     activeUser,
     setActiveUser,
-    refetch: fetchDetails,
+    refetch: () => fetchDetails(competition?._id),
     register,
     submitEntry,
     isActionLoading,
   };
 };
+

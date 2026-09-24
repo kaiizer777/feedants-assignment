@@ -42,7 +42,14 @@ const WINNER_IMAGES: Record<string, any> = {
 
 export default function CompetitionDetailsScreen() {
   const params = useLocalSearchParams<{ id?: string; user?: string }>();
-  const competitionId = typeof params.id === "string" && params.id.trim() ? params.id.trim() : undefined;
+  // Use URL param if provided, otherwise check optional env override; if none provided, defaults to undefined (auto-fetches /latest)
+  const competitionId =
+    typeof params.id === "string" && params.id.trim()
+      ? params.id.trim()
+      : typeof process.env.EXPO_PUBLIC_DEFAULT_COMPETITION_ID === "string" &&
+        process.env.EXPO_PUBLIC_DEFAULT_COMPETITION_ID.trim()
+      ? process.env.EXPO_PUBLIC_DEFAULT_COMPETITION_ID.trim()
+      : undefined;
   const initialUser = params.user === "ananya" ? MOCK_USERS[1] : MOCK_USERS[0];
 
   const {

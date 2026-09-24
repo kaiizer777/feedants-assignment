@@ -5,15 +5,12 @@ import { Ionicons } from "@expo/vector-icons";
 export const DisclaimerBanner: React.FC = () => {
   return (
     <View style={styles.banner}>
-      <Ionicons
-        name="information-circle-outline"
-        size={18}
-        color="#00897B"
-        style={styles.icon}
-      />
+      <View style={styles.iconCircle}>
+        <Ionicons name="information" size={13} color="#007A78" />
+      </View>
       <Text style={styles.text}>
         <Text style={styles.boldText}>Disclaimer: </Text>
-        Only contributions from paid participants will be considered for judging.
+        Only contributions from registered participants with valid entry fees will be evaluated for final ranking and rewards.
       </Text>
     </View>
   );
@@ -22,25 +19,33 @@ export const DisclaimerBanner: React.FC = () => {
 const styles = StyleSheet.create({
   banner: {
     backgroundColor: "#EEFBF8",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     marginHorizontal: 16,
     marginBottom: 16,
     flexDirection: "row",
     alignItems: "flex-start",
     borderWidth: 1,
     borderColor: "#B2DFDB",
-    borderTopColor: "#CCFBF1",
-    gap: 8,
+    borderTopColor: "rgba(255, 255, 255, 0.95)",
+    gap: 10,
   },
-  icon: {
+  iconCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: 1,
+    borderWidth: 1,
+    borderColor: "#B2DFDB",
   },
   text: {
     flex: 1,
-    fontSize: 12.5,
-    lineHeight: 18,
+    fontSize: 11.5,
+    lineHeight: 17,
     color: "#0F766E",
     fontWeight: "500",
   },

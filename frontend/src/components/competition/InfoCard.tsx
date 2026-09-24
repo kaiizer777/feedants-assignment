@@ -24,6 +24,7 @@ export const InfoCard: React.FC<InfoCardProps> = ({ competition }) => {
   const isRegistered = Boolean(userRegistration?.isRegistered);
   const progressRatio = totalSpots > 0 ? Math.min(1, Math.max(0, spotsTaken / totalSpots)) : 0;
   const progressPercent = `${Math.round(progressRatio * 100)}%` as any;
+  const isSpotsLow = spotsRemaining <= 5 && spotsRemaining > 0;
 
   return (
     <View style={styles.card}>
@@ -35,13 +36,13 @@ export const InfoCard: React.FC<InfoCardProps> = ({ competition }) => {
 
         {isRegistered && (
           <View style={styles.registeredBadge}>
-            <Ionicons name="checkmark-circle" size={14} color="#00897B" />
+            <Ionicons name="checkmark-circle" size={15} color="#007A78" />
             <Text style={styles.registeredText}>Registered</Text>
           </View>
         )}
       </View>
 
-      {/* Tags Row */}
+      {/* Tags & Certificate Row */}
       <View style={styles.tagsRow}>
         {tags
           ?.filter((t) => !t.toLowerCase().includes("certificate"))
@@ -52,12 +53,15 @@ export const InfoCard: React.FC<InfoCardProps> = ({ competition }) => {
           ))}
 
         {certificateProvided && (
-          <View style={styles.certRow}>
-            <Ionicons name="trophy-outline" size={14} color="#00897B" />
+          <View style={styles.certChip}>
+            <Ionicons name="trophy" size={13} color="#D97706" />
             <Text style={styles.certText}>Winners get certificate</Text>
           </View>
         )}
       </View>
+
+      {/* Divider */}
+      <View style={styles.metricDivider} />
 
       {/* Metrics Row: Prize Pool, Entry Fee, Spots Progress */}
       <View style={styles.metricsRow}>
@@ -65,19 +69,38 @@ export const InfoCard: React.FC<InfoCardProps> = ({ competition }) => {
         <View style={styles.metricColumn}>
           <Text style={styles.metricLabel}>Prize Pool</Text>
           <Text style={styles.prizeValue}>{formatCurrency(prizePool)}</Text>
+          <Text style={styles.metricSubtext}>Guaranteed</Text>
         </View>
+
+        {/* Vertical divider */}
+        <View style={styles.verticalDivider} />
 
         {/* Entry Fee */}
         <View style={styles.metricColumn}>
           <Text style={styles.metricLabel}>Entry Fee</Text>
           <Text style={styles.feeValue}>{formatCurrency(entryFee)}</Text>
+          <Text style={styles.metricSubtext}>Single entry</Text>
         </View>
+
+        {/* Vertical divider */}
+        <View style={styles.verticalDivider} />
 
         {/* Spots Left & Progress Bar */}
         <View style={styles.spotsColumn}>
           <View style={styles.spotsHeader}>
-            <Ionicons name="people-outline" size={13} color="#007A78" />
-            <Text style={styles.spotsLeftText} numberOfLines={1}>
+            <Ionicons
+              name={isSpotsLow ? "flame" : "people"}
+              size={13}
+              color={isSpotsLow ? "#EA580C" : "#007A78"}
+            />
+            <Text
+              style={[
+                styles.spotsLeftText,
+                isSpotsLow && styles.spotsLowText,
+                spotsRemaining === 0 && styles.spotsFullText,
+              ]}
+              numberOfLines={1}
+            >
               {spotsRemaining === 0
                 ? "Spots Full"
                 : `Only ${spotsRemaining} spots left`}
@@ -86,7 +109,13 @@ export const InfoCard: React.FC<InfoCardProps> = ({ competition }) => {
 
           {/* Progress track */}
           <View style={styles.progressBarTrack}>
-            <View style={[styles.progressBarFill, { width: progressPercent }]} />
+            <View
+              style={[
+                styles.progressBarFill,
+                { width: progressPercent },
+                isSpotsLow && { backgroundColor: "#EA580C" },
+              ]}
+            />
           </View>
 
           <Text style={styles.bookedText}>
@@ -107,12 +136,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#EEF2F6",
-    borderTopColor: "#FFFFFF",
-    shadowColor: "#0D2B2A",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
+    borderColor: "#E2E8F0",
+    borderTopColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
     elevation: 2,
   },
   headerRow: {
@@ -123,11 +152,11 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontSize: 22,
+    fontSize: 21,
     fontWeight: "800",
     color: "#0F172A",
-    letterSpacing: -0.5,
-    lineHeight: 28,
+    letterSpacing: -0.4,
+    lineHeight: 27,
   },
   registeredBadge: {
     flexDirection: "row",
@@ -136,12 +165,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#E6F7F5",
     borderWidth: 1,
     borderColor: "#99F6E4",
+    borderTopColor: "rgba(255, 255, 255, 0.9)",
     borderRadius: 20,
     paddingHorizontal: 10,
-    paddingVertical: 4.5,
+    paddingVertical: 5,
   },
   registeredText: {
-    fontSize: 11.5,
+    fontSize: 12,
     fontWeight: "700",
     color: "#007A78",
   },
@@ -151,10 +181,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     marginTop: 10,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   tagChip: {
-    backgroundColor: "#F1F5F9",
+    backgroundColor: "#F8FAFC",
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 4.5,
@@ -166,52 +196,72 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#475569",
   },
-  certRow: {
+  certChip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    marginLeft: 2,
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 9,
+    paddingVertical: 4.5,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#FDE68A",
   },
   certText: {
-    fontSize: 12,
+    fontSize: 11.5,
     fontWeight: "700",
-    color: "#007A78",
+    color: "#B45309",
+  },
+  metricDivider: {
+    height: 1,
+    backgroundColor: "#F1F5F9",
+    marginBottom: 10,
   },
   metricsRow: {
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#F8FAFC",
   },
   metricColumn: {
-    marginRight: 6,
+    flex: 1,
+  },
+  verticalDivider: {
+    width: 1,
+    height: 38,
+    backgroundColor: "#F1F5F9",
+    marginHorizontal: 8,
   },
   metricLabel: {
     fontSize: 11,
     fontWeight: "600",
     color: "#64748B",
-    marginBottom: 2,
+    marginBottom: 1,
     letterSpacing: 0.1,
   },
   prizeValue: {
-    fontSize: 24,
+    fontSize: 21,
     fontWeight: "900",
     color: "#007A78",
-    letterSpacing: -0.5,
+    letterSpacing: -0.4,
     fontVariant: ["tabular-nums"],
   },
   feeValue: {
-    fontSize: 24,
+    fontSize: 21,
     fontWeight: "900",
     color: "#0F172A",
-    letterSpacing: -0.5,
+    letterSpacing: -0.4,
     fontVariant: ["tabular-nums"],
+  },
+  metricSubtext: {
+    fontSize: 10,
+    color: "#94A3B8",
+    fontWeight: "500",
+    marginTop: 1,
   },
   spotsColumn: {
     alignItems: "flex-end",
-    minWidth: 125,
+    minWidth: 120,
+    flex: 1.2,
   },
   spotsHeader: {
     flexDirection: "row",
@@ -224,13 +274,20 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#007A78",
   },
+  spotsLowText: {
+    color: "#EA580C",
+  },
+  spotsFullText: {
+    color: "#DC2626",
+  },
   progressBarTrack: {
-    width: 125,
-    height: 4.5,
-    backgroundColor: "#E0F2F1",
+    width: "100%",
+    maxWidth: 125,
+    height: 5,
+    backgroundColor: "#E2E8F0",
     borderRadius: 3,
     overflow: "hidden",
-    marginVertical: 3,
+    marginVertical: 2,
   },
   progressBarFill: {
     height: "100%",

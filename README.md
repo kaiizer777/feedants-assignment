@@ -59,9 +59,6 @@ cd feedants-assignment
    - Seed the target competition: *"Feedants Classical Dance"* (20 total spots, ₹1,500 prize pool, ₹99 entry fee) with timestamps computed relative to runtime.
    - Seed an initial registration for *"Ananya Sharma"* to establish the baseline of 1 spot taken (19 spots remaining).
    - Seed a demo unregistered user *"Saif (Solo Dev)"* for interactive testing.
-   - **Important:** Note the generated competition ID printed in the console output:
-     `✅ Seeded competition: "Feedants Classical Dance" (ID: <COMPETITION_ID>)`
-     (e.g., `6ab43aaaabd4bffa981a53c9`). You will set this in `frontend/.env`.
 
 4. **Start the backend development server:**
    ```bash
@@ -87,12 +84,11 @@ cd feedants-assignment
    ```bash
    cp .env.example .env
    ```
-   Ensure `frontend/.env` contains the backend API URL and the competition ID from the seed step:
+   The application works out of the box with **zero manual configuration required**. It defaults to `http://localhost:5000/api` and automatically fetches the latest seeded competition on launch:
    ```env
    EXPO_PUBLIC_API_BASE_URL=http://localhost:5000/api
-   EXPO_PUBLIC_DEFAULT_COMPETITION_ID=6ab43aaaabd4bffa981a53c9
    ```
-   *(Paste the ID generated during `npm run seed` above if different).*
+   *(Note: `EXPO_PUBLIC_DEFAULT_COMPETITION_ID` is supported as an optional override if you ever wish to target a specific competition ID).*
    > **Note for Physical Device Testing:** If running on a physical phone via Expo Go, replace `localhost` with your computer's local network IP address (e.g., `http://192.168.1.50:5000/api`), ensuring both your computer and phone are connected to the same Wi-Fi network.
 
 3. **Start the Expo development server:**
@@ -121,7 +117,7 @@ cd feedants-assignment
 | Variable | Required | Description | Default / Source |
 |---|---|---|---|
 | `EXPO_PUBLIC_API_BASE_URL` | Yes | Base URL for backend API requests | `http://localhost:5000/api` (use LAN IP for physical device) |
-| `EXPO_PUBLIC_DEFAULT_COMPETITION_ID` | Optional | ObjectId of the competition to load on launch | `6ab43aaaabd4bffa981a53c9` |
+| `EXPO_PUBLIC_DEFAULT_COMPETITION_ID` | Optional | ObjectId of the competition to load on launch (defaults to auto-fetching latest seeded competition via `/api/competitions/latest`) | None (auto-fetches latest) |
 
 ---
 
@@ -206,6 +202,11 @@ To verify the implementation against race conditions, an automated stress test w
   - **HTTP 409 SPOTS_FULL**: Exactly 14 requests were rejected cleanly.
   - **HTTP 500 / Network Failures**: 0.
   - **Database Verification Post-Contention**: `spotsTaken` was exactly 20/20, `spotsRemaining` was 0, and exactly 1 new registration document was persisted.
+
+### 6. Frictionless Reviewer Setup via `/competitions/latest` Endpoint
+- **Decision**: Implemented a dedicated convenience endpoint `GET /api/competitions/latest` registered before `GET /api/competitions/:id` to retrieve the latest seeded competition and user registration state automatically.
+- **Rationale**: Eliminates manual friction for reviewers, who previously had to copy the generated MongoDB ObjectId from backend terminal logs into `frontend/.env`. Now, the frontend works out-of-the-box upon `npm run seed` and launch without manual intervention.
+- **Trade-off / Production Architecture**: In a full multi-competition product, this convenience shortcut would be superseded by a paginated, filterable competition catalog (`GET /api/competitions?status=...&category=...&page=...`) rather than a single-latest shortcut.
 
 ---
 

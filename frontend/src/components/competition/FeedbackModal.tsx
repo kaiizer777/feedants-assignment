@@ -27,10 +27,13 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
     : "information-circle";
 
   const iconColor = isSuccess
-    ? "#059669"
+    ? "#007A78"
     : isError
     ? "#DC2626"
     : "#0284C7";
+
+  const buttonBg = isError ? "#DC2626" : "#005C54";
+  const buttonBottomColor = isError ? "#991B1B" : "#002B27";
 
   return (
     <Modal
@@ -49,11 +52,17 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
           <Text style={styles.message}>{message}</Text>
 
           <TouchableOpacity
-            style={[styles.closeButton, { backgroundColor: isError ? "#DC2626" : "#006466" }]}
+            style={[
+              styles.closeButton,
+              {
+                backgroundColor: buttonBg,
+                borderBottomColor: buttonBottomColor,
+              },
+            ]}
             onPress={onClose}
-            activeOpacity={0.85}
+            activeOpacity={0.88}
           >
-            <Text style={styles.closeButtonText}>OK</Text>
+            <Text style={styles.closeButtonText}>Continue</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -64,43 +73,47 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.55)",
+    backgroundColor: "rgba(15, 23, 42, 0.6)",
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
   },
   card: {
     width: "100%",
-    maxWidth: 400,
+    maxWidth: 380,
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 24,
     alignItems: "center",
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 6,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.16,
+    shadowRadius: 16,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    borderTopColor: "rgba(255, 255, 255, 0.95)",
   },
   iconWrapper: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: 14,
   },
   title: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#111827",
-    marginBottom: 8,
+    color: "#0F172A",
+    marginBottom: 6,
     textAlign: "center",
+    letterSpacing: -0.3,
   },
   message: {
     fontSize: 13,
-    color: "#4B5563",
-    lineHeight: 19,
+    color: "#475569",
+    lineHeight: 20,
     textAlign: "center",
     marginBottom: 20,
   },
@@ -110,10 +123,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255, 255, 255, 0.35)",
+    borderBottomWidth: 2,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   closeButtonText: {
     color: "#FFFFFF",
     fontSize: 14,
-    fontWeight: "700",
+    fontWeight: "800",
+    letterSpacing: 0.1,
   },
 });

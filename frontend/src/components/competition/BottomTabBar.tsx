@@ -20,7 +20,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
       <TouchableOpacity
         style={styles.tabItem}
         onPress={() => onTabPress?.("home")}
-        activeOpacity={0.7}
+        activeOpacity={0.75}
       >
         <Ionicons
           name={activeTab === "home" ? "home" : "home-outline"}
@@ -30,16 +30,17 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
         <Text style={[styles.tabLabel, activeTab === "home" && styles.tabLabelActive]}>
           Home
         </Text>
+        {activeTab === "home" && <View style={styles.activeDot} />}
       </TouchableOpacity>
 
       {/* 2. Explore */}
       <TouchableOpacity
         style={styles.tabItem}
         onPress={() => onTabPress?.("explore")}
-        activeOpacity={0.7}
+        activeOpacity={0.75}
       >
         <Ionicons
-          name={activeTab === "explore" ? "search" : "search-outline"}
+          name={activeTab === "explore" ? "compass" : "compass-outline"}
           size={20}
           color={activeTab === "explore" ? "#007A78" : "#64748B"}
         />
@@ -51,16 +52,17 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
         >
           Explore
         </Text>
+        {activeTab === "explore" && <View style={styles.activeDot} />}
       </TouchableOpacity>
 
       {/* 3. Center Add (+) Button */}
       <TouchableOpacity
         style={styles.centerAddWrapper}
         onPress={() => onTabPress?.("add")}
-        activeOpacity={0.85}
+        activeOpacity={0.88}
       >
         <View style={styles.centerAddButton}>
-          <Ionicons name="add" size={24} color="#FFFFFF" />
+          <Ionicons name="add" size={26} color="#FFFFFF" />
         </View>
       </TouchableOpacity>
 
@@ -68,10 +70,10 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
       <TouchableOpacity
         style={styles.tabItem}
         onPress={() => onTabPress?.("competitions")}
-        activeOpacity={0.7}
+        activeOpacity={0.75}
       >
         <Ionicons
-          name="trophy"
+          name={activeTab === "competitions" ? "trophy" : "trophy-outline"}
           size={20}
           color={activeTab === "competitions" ? "#007A78" : "#64748B"}
         />
@@ -81,15 +83,16 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
             activeTab === "competitions" && styles.tabLabelActive,
           ]}
         >
-          Competitions
+          Contests
         </Text>
+        {activeTab === "competitions" && <View style={styles.activeDot} />}
       </TouchableOpacity>
 
       {/* 5. Profile */}
       <TouchableOpacity
         style={styles.tabItem}
         onPress={() => onTabPress?.("profile")}
-        activeOpacity={0.7}
+        activeOpacity={0.75}
       >
         <Image
           source={{ uri: userAvatarUrl }}
@@ -107,6 +110,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
         >
           Profile
         </Text>
+        {activeTab === "profile" && <View style={styles.activeDot} />}
       </TouchableOpacity>
     </View>
   );
@@ -119,7 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderTopColor: "#F1F5F9",
+    borderTopColor: "#E2E8F0",
     paddingTop: 6,
     paddingBottom: 6,
     height: 58,
@@ -129,6 +133,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 2,
     minWidth: 58,
+    position: "relative",
   },
   tabLabel: {
     fontSize: 10,
@@ -137,13 +142,20 @@ const styles = StyleSheet.create({
   },
   tabLabelActive: {
     color: "#007A78",
-    fontWeight: "700",
+    fontWeight: "800",
+  },
+  activeDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "#007A78",
+    marginTop: 1,
   },
   centerAddWrapper: {
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 4,
-    marginTop: -12,
+    marginTop: -14,
   },
   centerAddButton: {
     width: 48,
@@ -153,21 +165,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderTopWidth: 1.5,
-    borderTopColor: "rgba(255, 255, 255, 0.32)",
+    borderTopColor: "rgba(255, 255, 255, 0.4)",
     borderBottomWidth: 2.5,
     borderBottomColor: "#002B27",
     shadowColor: "#002B27",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.28,
+    shadowOffset: { width: 0, height: 3.5 },
+    shadowOpacity: 0.32,
     shadowRadius: 5,
-    elevation: 5,
+    elevation: 6,
   },
   profileAvatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     borderWidth: 1.5,
-    borderColor: "transparent",
+    borderColor: "#E2E8F0",
   },
   profileAvatarActive: {
     borderColor: "#007A78",
