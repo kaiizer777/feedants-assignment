@@ -27,11 +27,22 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
+    const data = error.response?.data as any;
+    const errorObj = data?.error;
     const errorMsg =
-      (error.response?.data as { error?: string })?.error ||
+      (typeof errorObj === "object" ? errorObj?.message : errorObj) ||
+      data?.message ||
       error.message ||
       "Unknown network error occurred";
-    return Promise.reject(new Error(errorMsg));
+
+    const enhancedError: any = new Error(errorMsg);
+    enhancedError.code =
+      (typeof errorObj === "object" ? errorObj?.code : undefined) ||
+      error.code;
+    enhancedError.status = error.response?.status;
+    enhancedError.details = typeof errorObj === "object" ? errorObj?.details : undefined;
+
+    return Promise.reject(enhancedError);
   }
 );
 

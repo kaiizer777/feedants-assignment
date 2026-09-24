@@ -6,6 +6,7 @@ import { Competition, Registration, User } from "../models";
 // Load environment variables before executing database operations
 dotenv.config();
 
+const SEED_COMPETITION_ID = new mongoose.Types.ObjectId("6ab43aaaabd4bffa981a53c9");
 const SEED_COMPETITION_SLUG = "feedants-classical-dance";
 const SEEDED_USER_TOKEN = "mock-user-seed-registered-1";
 const DEMO_USER_TOKEN = "mock-user-demo-unregistered-2";
@@ -25,11 +26,13 @@ export const seedDatabase = async (disconnectOnComplete: boolean = true): Promis
     // Remove any existing documents with known seed identifiers to guarantee clean re-runs
     console.log("🧹 Cleaning up any previous seed data (ensuring idempotency)...");
 
-    const existingComp = await Competition.findOne({ slug: SEED_COMPETITION_SLUG });
-    if (existingComp) {
-      await Registration.deleteMany({ competitionId: existingComp._id });
-      await Competition.deleteOne({ _id: existingComp._id });
-      console.log(`   - Deleted existing competition [${SEED_COMPETITION_SLUG}] and its registrations`);
+    const existingComps = await Competition.find({
+      $or: [{ slug: SEED_COMPETITION_SLUG }, { _id: SEED_COMPETITION_ID }],
+    });
+    for (const comp of existingComps) {
+      await Registration.deleteMany({ competitionId: comp._id });
+      await Competition.deleteOne({ _id: comp._id });
+      console.log(`   - Deleted existing competition [${comp.slug}] (${comp._id}) and its registrations`);
     }
 
     await User.deleteMany({
@@ -70,6 +73,7 @@ export const seedDatabase = async (disconnectOnComplete: boolean = true): Promis
     const resultDate = new Date(now + 18 * 24 * 60 * 60 * 1000);
 
     const competition = await Competition.create({
+      _id: SEED_COMPETITION_ID,
       title: "Feedants Classical Dance",
       slug: SEED_COMPETITION_SLUG,
       category: "Dance",

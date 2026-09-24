@@ -35,3 +35,8 @@ Thumbs.db
 *.ntvs*
 *.njsproj
 *.sln
+
+# Internal assignment notes & assets
+Objective_Page.png
+work.md
+scope.md
